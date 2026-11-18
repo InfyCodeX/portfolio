@@ -45,9 +45,9 @@ function isPlainClick(event) {
 
 (() => {
   const viewer = document.querySelector("#pdf-viewer");
-  const frame = document.querySelector("#pdf-frame");
+  const pages = document.querySelector("#pdf-pages");
   const title = document.querySelector("#pdf-title");
-  if (typeof viewer.showModal !== "function" || navigator.pdfViewerEnabled === false) return;
+  if (typeof viewer.showModal !== "function") return;
 
   let active = null;
   for (const link of document.querySelectorAll("[data-pdf-title]")) {
@@ -56,9 +56,26 @@ function isPlainClick(event) {
       event.preventDefault();
       active = link;
       title.textContent = link.dataset.pdfTitle;
-      frame.title = title.textContent;
-      frame.src = link.href + "#view=FitH&toolbar=0&navpanes=0";
+
+      const pageCount = Number(link.dataset.pdfPages);
+      const directory = link.href.replace(/\.pdf$/, "/");
+      const documentPages = document.createDocumentFragment();
+      for (let number = 1; number <= pageCount; number++) {
+        const page = document.createElement("img");
+        page.className = "pdf-page";
+        page.width = 1047;
+        page.height = 1480;
+        page.alt = `Страница ${number} из ${pageCount}`;
+        page.loading = number === 1 ? "eager" : "lazy";
+        page.decoding = "async";
+        page.draggable = false;
+        page.src = directory + number + ".webp";
+        documentPages.append(page);
+      }
+      pages.replaceChildren(documentPages);
       viewer.showModal();
+      pages.scrollTop = 0;
+      pages.focus({ preventScroll: true });
     });
   }
 
@@ -66,7 +83,7 @@ function isPlainClick(event) {
     if (event.target === viewer) viewer.close();
   });
   viewer.addEventListener("close", () => {
-    frame.removeAttribute("src");
+    pages.replaceChildren();
     active?.focus({ preventScroll: true });
     active = null;
   });

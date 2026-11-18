@@ -180,20 +180,21 @@ h1 span { display: block; margin-top: .06em; color: var(--coffee); font-size: 1.
   border-top: 1px solid #d6a98752;
 }
 .lesson-photos {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start;
-  gap: clamp(.65rem, 2vw, 1.3rem); margin: .92rem auto 0;
+  display: grid; gap: clamp(.48rem, 1.12vw, .9rem); margin: .92rem auto 0;
+  max-width: 1000px;
 }
-.lesson-photos:has(> :nth-child(2):last-child) {
-  max-width: 1000px; grid-template-columns: minmax(0, 9fr) minmax(0, 16fr);
+.lesson-row {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: inherit;
 }
+.lesson-row-mixed { grid-template-columns: minmax(0, 9fr) repeat(2, minmax(0, 16fr)); }
 .lesson-photo {
-  display: block; position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+  display: block; position: relative; min-width: 0; min-height: 0; aspect-ratio: 4 / 3; overflow: hidden;
   border: 1px solid #c3967178; border-radius: 12px; background: #2a1d16;
   box-shadow: 0 8px 22px #1d110e49; cursor: zoom-in;
   transition: border-color .24s ease, box-shadow .24s ease;
 }
 .lesson-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .28s ease; }
-.lesson-photos:has(> :nth-child(2):last-child) > :first-child { aspect-ratio: 3 / 4; }
+.lesson-row-mixed > :first-child { aspect-ratio: 3 / 4; }
 .lesson-photo:hover { border-color: #edc8a2; box-shadow: 0 12px 27px #1d110e66; }
 .lesson-photo:focus-visible { outline-color: #edc8a2; }
 
@@ -279,7 +280,7 @@ dialog::backdrop { background: rgb(35 23 17 / .87); }
 .viewer img { width: min(92vw, 1400px); height: 89vh; height: 89dvh; object-fit: contain; cursor: zoom-out; }
 .viewer img:focus { outline: none; }
 .pdf-viewer {
-  inset: 0; width: min(1130px, calc(100% - 40px)); height: 91vh; height: 91dvh;
+  inset: 0; width: min(840px, calc(100% - 40px)); height: 91vh; height: 91dvh;
   max-width: none; max-height: none; margin: auto; padding: 0; overflow: hidden;
   border: 1px solid #bda48d; border-radius: 13px; background: var(--cream);
 }
@@ -294,7 +295,20 @@ dialog::backdrop { background: rgb(35 23 17 / .87); }
   color: var(--coffee); border: 0; border-radius: 8px; background: #f0dfd0;
 }
 .pdf-header button:hover { background: #e4c9b3; }
-.pdf-viewer iframe { width: 100%; height: 100%; border: 0; background: #eaddd0; }
+.pdf-scroll {
+  min-height: 0; overflow: auto; overscroll-behavior: contain;
+  padding: clamp(.5rem, 2.2vw, 1.4rem);
+  background: #eaddd0; touch-action: pan-y pinch-zoom;
+}
+.pdf-scroll:focus-visible { outline-offset: -3px; }
+.pdf-page {
+  width: min(100%, 565px); height: auto; margin-inline: auto;
+  background: #fff; box-shadow: 0 2px 10px #48251025;
+}
+.pdf-page + .pdf-page { margin-top: .88rem; }
+@media (min-width: 761px) {
+  .pdf-page { max-width: min(570px, 55vh); max-width: min(570px, 55dvh); }
+}
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .program:hover, .scan:hover { transform: translateY(-3px); box-shadow: 0 14px 30px #512a1715; }
@@ -322,7 +336,6 @@ dialog::backdrop { background: rgb(35 23 17 / .87); }
   .hero { column-gap: 1.85rem; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); }
   h1 { font-size: clamp(2.12rem, 4.8vw, 3.2rem); }
   .document-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .lesson-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 650px) {
   :root { --nav-height: 100px; }
@@ -334,6 +347,10 @@ dialog::backdrop { background: rgb(35 23 17 / .87); }
   .directions { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
   .directions article + article { border-top: 1px solid #d6a98742; padding-top: .95rem; }
   .directions p { margin-top: .32rem; }
+  .lesson-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lesson-row { display: contents; }
+  .lesson-row-mixed > :first-child { grid-row: span 2; aspect-ratio: auto; }
+  .lesson-row-mixed > :first-child img { position: absolute; inset: 0; }
 }
 @media (max-width: 570px) {
   .hero { grid-template-columns: minmax(0, 1fr); padding: 1.35rem; gap: .66rem; }
@@ -346,8 +363,7 @@ dialog::backdrop { background: rgb(35 23 17 / .87); }
   .workplace br { display: none; }
   .hero-lead { order: 1; margin-block: .5rem .38rem; }
   .bio { order: 2; padding-top: .9rem; }
-  .lesson-photos:has(> :nth-child(2):last-child), .study-grid, .diplomas { grid-template-columns: minmax(0, 1fr); }
-  .lesson-photos:has(> :nth-child(2):last-child) > :first-child { max-width: min(78%, 285px); justify-self: center; }
+  .study-grid, .diplomas { grid-template-columns: minmax(0, 1fr); }
   .pdf-viewer { width: calc(100% - 14px); height: 94vh; height: 94dvh; }
 }
 @media (max-width: 520px) {
